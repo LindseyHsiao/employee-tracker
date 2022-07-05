@@ -52,7 +52,7 @@ function viewRoles() {
 }
 
 function viewEmployees() {
-    db.returnAllRoles().then(([data]) => {
+    db.returnAllEmployees().then(([data]) => {
         console.table(data)
     }).then(() => start());
 }
