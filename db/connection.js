@@ -9,12 +9,12 @@ const connection = mysql.createConnection(
       // MySQL password
       password: 'password',
       database: 'employees_db'
-    },
-    console.log(`Connected to the employees_db database.`)
+    }
   );
 
   connection.connect(function(err){
     if (err) throw err;
   })
 
-  module.export = connection;
+  module.exports = connection;
+
