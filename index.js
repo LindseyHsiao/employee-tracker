@@ -1,4 +1,5 @@
-const inquirer = require('inquirer')
+const inquirer = require('inquirer');
+const { returnAllRoles } = require('./db');
 const db = require('./db')
 require('console.table');
 
@@ -30,7 +31,7 @@ function start() {
                 addEmployee()
                 break;
             case 'update an employee role':
-                updateEmployee()
+                updateEmployeeRole()
                 break;
             default:
                 process.exit()
@@ -57,4 +58,165 @@ function viewEmployees() {
     }).then(() => start());
 }
 
-start()
+function addDepartment() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: 'what is the department name?',
+            name: 'departmentName'
+        }
+    ]).then(res => {
+        db.insertDepartment(res.departmentName).then(([data]) => {
+            console.table(data)
+        }).then(() => start());
+    })
+
+}
+
+function addRole() {
+    db.returnAllDepartments().then(([data]) => {
+        const departmentOptions = data.map(({ id, name }) => ({
+            name: name,
+            value: id
+        }));
+
+        inquirer.prompt([
+            {
+                type: 'input',
+                message: 'What is the role name?',
+                name: 'title'
+            },
+            {
+                type: 'input',
+                message: 'What is the role salary?',
+                name: 'salary'
+            },
+            {
+                type: 'list',
+                name: 'department_id',
+                message: 'what department does this new role belong to?',
+                choices: departmentOptions
+            }
+
+        ]).then(res => {
+            db.insertRole(res).then(() => start())
+        })
+
+
+    })
+
+
+}
+
+function addEmployee() {
+
+
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: 'what is the employee first name?',
+            name: 'employeeFirstName'
+        },
+        {
+            type: 'input',
+            message: 'what is the employee last name?',
+            name: 'employeeLastName'
+        },
+
+    ]).then(res => {
+        const firstName = res.employeeFirstName;
+        const lastName = res.employeeLastName;
+
+        db.returnAllRoles().then(([data]) => {
+            const roleOptions = data.map(({ id, title }) => ({
+                name: title,
+                value: id
+            }));
+
+
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'roleId',
+                    message: 'What is the employee role?',
+                    choices: roleOptions
+                }
+            ]).then((answer) => {
+                const roleId = answer.roleId;
+
+                db.returnAllEmployees().then(([data]) => {
+                    const managerOptions = data.map(({ id, first_name, last_name }) => ({
+                        name: `${first_name} ${last_name}`,
+                        value: id
+                    }));
+
+
+                    inquirer.prompt([
+                        {
+                            type: 'list',
+                            name: 'managerId',
+                            message: 'Who is the employee manager?',
+                            choices: managerOptions
+                        }
+                    ]).then((res) => {
+
+                        const newEmployee = {
+                            first_name: firstName,
+                            last_name: lastName,
+                            role_id: roleId,
+                            manager_id: res.managerId
+                        }
+
+
+                        db.insertEmployee(newEmployee).then(() => start())
+                    })
+                })
+
+            })
+        })
+    })
+}
+
+
+
+// function updateEmployeeRole()
+// db.returnAllEmployees().then(([data]) => {
+//     const employeeOptions = data.map(({ id, first_name, last_name }) => ({
+//         value: id,
+//         name: `${first_name} ${last_name}`
+//     }));
+
+//     inquirer.prompt([
+//         {
+//             type: 'list',
+//             name: 'updateEmployee',
+//             message: 'Which employee would you like to update?',
+//             choices: employeeOptions
+//         }
+//     ])
+ // }).then((answer) => {
+//     const updateEmployee = answer.employeeOptions;
+
+//     db.returnAllRoles().then(([data]) => {
+//         const roleOptions = data.map(({ id, title }) => ({
+//             name: title,
+//             value: id
+//         }));
+
+//         inquirer.prompt([
+//             {
+//                 type: 'list',
+//                 name: 'roleUpdate',
+//                 message: 'What is the new employee role?',
+//                 choices: roleOptions
+//             }
+//         ]).then((answer) => {
+//             const roleChoice = answer.roleUpdate;
+
+//         })
+//     })})
+
+
+
+
+    start()
