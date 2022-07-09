@@ -179,44 +179,55 @@ function addEmployee() {
 
 
 
-// function updateEmployeeRole()
-// db.returnAllEmployees().then(([data]) => {
-//     const employeeOptions = data.map(({ id, first_name, last_name }) => ({
-//         value: id,
-//         name: `${first_name} ${last_name}`
-//     }));
+function updateEmployeeRole() {
+    db.returnAllEmployees().then(([data]) => {
+        const employeeOptions = data.map(({ first_name, last_name, id }) => ({
+            //It is {property: variable}. On the left is the name of the property you want to retrieve and on the right is the name of the variable you want to put that value into.
+            name: `${first_name} ${last_name}`,
+            value: id
+        }));
+//console.log({employeeOptions})
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'updateEmployee',
+                message: 'Which employee would you like to update?',
+                choices: employeeOptions,
+            }
+            
+        ]).then((answer) => {
+        const employee = answer.updateEmployee;
 
-//     inquirer.prompt([
-//         {
-//             type: 'list',
-//             name: 'updateEmployee',
-//             message: 'Which employee would you like to update?',
-//             choices: employeeOptions
-//         }
-//     ])
- // }).then((answer) => {
-//     const updateEmployee = answer.employeeOptions;
+        db.returnAllRoles().then(([data]) => {
+            const roleOptions = data.map(({ id, title }) => ({
+                name: title,
+                value: id
+            }));
 
-//     db.returnAllRoles().then(([data]) => {
-//         const roleOptions = data.map(({ id, title }) => ({
-//             name: title,
-//             value: id
-//         }));
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'roleUpdate',
+                    message: 'What is the new employee role?',
+                    choices: roleOptions
+                }
+            ]).then((res) => {
 
-//         inquirer.prompt([
-//             {
-//                 type: 'list',
-//                 name: 'roleUpdate',
-//                 message: 'What is the new employee role?',
-//                 choices: roleOptions
-//             }
-//         ]).then((answer) => {
-//             const roleChoice = answer.roleUpdate;
+                const newEmployeeRole = {
+                    first_name: employee.first_name,
+                    last_name: employee.last_name,
+                    role_id: res.roleId,
+                    //manager_id: manager_id
+                }
+            
+            
+                db.insertEmployeeNewRole(newEmployeeRole).then(() => start())
 
-//         })
-//     })})
+            })
+        })
+    })
+}
+    )}
 
 
-
-
-    start()
+start()
