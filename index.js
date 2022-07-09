@@ -186,7 +186,7 @@ function updateEmployeeRole() {
             name: `${first_name} ${last_name}`,
             value: id
         }));
-//console.log({employeeOptions})
+        //console.log({employeeOptions})
         inquirer.prompt([
             {
                 type: 'list',
@@ -194,40 +194,41 @@ function updateEmployeeRole() {
                 message: 'Which employee would you like to update?',
                 choices: employeeOptions,
             }
-            
+
         ]).then((answer) => {
-        const employee = answer.updateEmployee;
+            const employee = answer.updateEmployee;
 
-        db.returnAllRoles().then(([data]) => {
-            const roleOptions = data.map(({ id, title }) => ({
-                name: title,
-                value: id
-            }));
+            db.returnAllRoles().then(([data]) => {
+                const roleOptions = data.map(({ id, title }) => ({
+                    name: title,
+                    value: id
+                }));
 
-            inquirer.prompt([
-                {
-                    type: 'list',
-                    name: 'roleUpdate',
-                    message: 'What is the new employee role?',
-                    choices: roleOptions
-                }
-            ]).then((res) => {
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'roleUpdate',
+                        message: 'What is the new employee role?',
+                        choices: roleOptions
+                    }
+                ]).then((res) => {
 
-                const newEmployeeRole = {
-                    first_name: employee.first_name,
-                    last_name: employee.last_name,
-                    role_id: res.roleId,
-                    //manager_id: manager_id
-                }
-            
-            
-                db.insertEmployeeNewRole(newEmployeeRole).then(() => start())
+                    const newEmployeeRole = {
+                        first_name: employee.first_name,
+                        last_name: employee.last_name,
+                        role_id: res.roleId,
+                        //manager_id: manager_id
+                    }
 
+
+                    db.insertEmployeeNewRole(newEmployeeRole).then(() => start())
+
+                })
             })
         })
-    })
+    }
+    )
 }
-    )}
 
 
 start()
