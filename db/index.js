@@ -33,7 +33,7 @@ class Data {
      }
 
      insertEmployeeRole(updatedRole){
-        return this.connection.promise().query('INSERT INTO employee.role SET ?', updatedRole)
+        return this.connection.promise().query('INSERT INTO employee SET ?', updatedRole)
      }
      
 }
