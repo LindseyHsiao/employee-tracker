@@ -221,7 +221,7 @@ function updateEmployeeRole() {
                     }
 
 
-                    db.insertEmployeeNewRole(newEmployeeRole).then(() => start())
+                    db.insertEmployeeRole(newEmployeeRole).then(() => start())
 
                 })
             })
